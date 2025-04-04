@@ -1,6 +1,6 @@
 """
 Unit tests for graph conversion functions in utils module.
-Run with `python -m unittest test/test_utils.py`.
+Run with `python -m unittest -v test/test_utils.py` from root directory.
 """
 
 from unittest import TestCase, main

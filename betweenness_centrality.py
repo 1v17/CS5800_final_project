@@ -82,10 +82,16 @@ def betweenness_centrality(graph, normalized=True, directed=False):
         for w, delta_w in accumulate_dependencies(stack, pred, sigma, source):
             betweenness[w] += delta_w
 
-    if normalized:
-        scale = 1 / ((len(graph) - 1) * (len(graph) - 2)) if len(graph) > 2 else None
-        if not directed:
-            scale *= 2
+    scale = 1.0
+    # normalize for the size of the graph
+    if normalized and len(graph) > 2:
+        scale = 1 / ((len(graph) - 1) * (len(graph) - 2))
+
+    # the centrality scores need to be divided by two if the graph is undirected
+    if not directed: 
+        scale /= 2
+    
+    if scale != 1.0:
         for v in betweenness:
             betweenness[v] *= scale
 
