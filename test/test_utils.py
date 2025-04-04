@@ -4,7 +4,7 @@ Run with `python -m unittest test/test_utils.py`.
 """
 
 from unittest import TestCase, main
-from utils.utils import create_adjacency_list, create_adjacency_matrix
+from utils import create_adjacency_list, create_adjacency_matrix
 
 PATH = "test/test_files/"
 
