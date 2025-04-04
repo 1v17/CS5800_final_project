@@ -1,5 +1,4 @@
-from collections import deque, defaultdict
-import heapq
+from collections import deque
 
 
 def bfs_shortest_paths(graph, source):
@@ -11,11 +10,10 @@ def bfs_shortest_paths(graph, source):
         source: The source node.
 
     Returns:
-        tuple: (stack, pred, sigma, dist)
+        tuple: (stack, pred, sigma)
             - stack: List of nodes in the order they are processed.
             - pred: Dictionary of predecessors for each node.
             - sigma: Dictionary of the number of shortest paths to each node.
-            - dist: Dictionary of distances from the source to each node.
     """
     stack = []
     pred = {v: [] for v in graph}
@@ -36,50 +34,7 @@ def bfs_shortest_paths(graph, source):
                 sigma[w] += sigma[v]
                 pred[w].append(v)
 
-    return stack, pred, sigma, dist
-
-
-def dijkstra_shortest_paths(graph, source, weight):
-    """
-    Perform Dijkstra's algorithm to compute shortest paths in a weighted graph.
-
-    Args:
-        graph (dict): Adjacency list representation of the graph.
-        source: The source node.
-        weight (dict): Dictionary of edge weights with (u, v) as keys.
-
-    Returns:
-        tuple: (stack, pred, sigma, dist)
-            - stack: List of nodes in the order they are processed.
-            - pred: Dictionary of predecessors for each node.
-            - sigma: Dictionary of the number of shortest paths to each node.
-            - dist: Dictionary of distances from the source to each node.
-    """
-    stack = []
-    pred = {v: [] for v in graph}
-    sigma = dict.fromkeys(graph, 0.0)
-    sigma[source] = 1.0
-    dist = dict.fromkeys(graph, float('inf'))
-    dist[source] = 0
-
-    queue = [(0, source)]
-    while queue:
-        d, v = heapq.heappop(queue)
-        if d > dist[v]:
-            continue
-        stack.append(v)
-        for w in graph[v]:
-            vw_dist = dist[v] + weight.get((v, w), 1)
-            if vw_dist < dist[w]:  # Found shorter path
-                dist[w] = vw_dist
-                heapq.heappush(queue, (vw_dist, w))
-                sigma[w] = sigma[v]
-                pred[w] = [v]
-            elif vw_dist == dist[w]:  # Found another shortest path
-                sigma[w] += sigma[v]
-                pred[w].append(v)
-
-    return stack, pred, sigma, dist
+    return stack, pred, sigma
 
 
 def accumulate_dependencies(stack, pred, sigma, source):
@@ -104,7 +59,7 @@ def accumulate_dependencies(stack, pred, sigma, source):
             yield w, delta[w]
 
 
-def betweenness_centrality(graph, normalized=True, directed=False, weight=None):
+def betweenness_centrality(graph, normalized=True, directed=False):
     """
     Computes the betweenness centrality for all nodes in a graph using Brandes' algorithm.
 
@@ -121,10 +76,8 @@ def betweenness_centrality(graph, normalized=True, directed=False, weight=None):
     betweenness = dict.fromkeys(graph, 0.0)
 
     for source in graph:
-        if weight is None:
-            stack, pred, sigma, dist = bfs_shortest_paths(graph, source)
-        else:
-            stack, pred, sigma, dist = dijkstra_shortest_paths(graph, source, weight)
+
+        stack, pred, sigma = bfs_shortest_paths(graph, source)
 
         for w, delta_w in accumulate_dependencies(stack, pred, sigma, source):
             betweenness[w] += delta_w
