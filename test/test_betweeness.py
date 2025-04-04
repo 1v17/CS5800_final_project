@@ -126,8 +126,28 @@ class TestBetweennessCentrality(TestCase):
             'E': ['B', 'D', 'F'],
             'F': ['C', 'E']
         }
-        expected = {'A': 0.0, 'B': 0.25, 'C': 0.0, 'D': 0.25, 'E': 0.5, 'F': 0.0}
+        expected = {'A': 1/12, 'B': 1/3, 'C': 1/12, 'D': 1/12, 'E': 1/3, 'F': 1/12}
         result = betweenness_centrality(graph, normalized=True, directed=False)
+        for node in expected:
+            self.assertAlmostEqual(result[node], expected[node], places=PLACES)
+    
+    def test_grid_graph_unnormalized(self):
+        """
+        Test Case: Grid Graph (unnormalized)
+        A -- B -- C
+        |    |    |
+        D -- E -- F
+        """
+        graph = {
+            'A': ['B', 'D'],
+            'B': ['A', 'C', 'E'],
+            'C': ['B', 'F'],
+            'D': ['A', 'E'],
+            'E': ['B', 'D', 'F'],
+            'F': ['C', 'E']
+        }
+        expected = {'A': 5/6, 'B': 10/3, 'C': 5/6, 'D': 5/6, 'E': 10/3, 'F':5/6}
+        result = betweenness_centrality(graph, normalized=False, directed=False)
         for node in expected:
             self.assertAlmostEqual(result[node], expected[node], places=PLACES)
 
