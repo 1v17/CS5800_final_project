@@ -109,8 +109,8 @@ def compare_centrality_with_egos(centrality_list: list[tuple], ego_vertices: set
     """
     centrality_nodes = set(node for node, _ in centrality_list)
     correct_ego_vertices = ego_vertices.intersection(centrality_nodes)
-    incorrect_ego_vertices = ego_vertices - correct_ego_vertices
-    missed_ego_vertices = centrality_nodes - correct_ego_vertices
+    incorrect_ego_vertices = centrality_nodes - correct_ego_vertices
+    missed_ego_vertices = ego_vertices - correct_ego_vertices
     print("Correct ego vertices:", correct_ego_vertices)
     if incorrect_ego_vertices:
         print("Incorrect prediction of top centrality vertices:", incorrect_ego_vertices)
