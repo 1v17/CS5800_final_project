@@ -68,3 +68,26 @@ def create_adjacency_matrix(edges_file_path: str) -> list[list[int]]:
         adjacency_matrix[v][u] = 1
 
     return adjacency_matrix
+
+def get_top_centrality(centrality_dict: dict, top_n: int=10) -> list:
+    """
+    Get the top N nodes based on their centrality scores.
+
+    Args:
+        centrality_dict (dict): Dictionary of centrality scores.
+        top_n (int): Number of top nodes to return.
+
+    Returns:
+        list: List of tuples containing the node and its centrality score.
+    
+    Raises:
+        ValueError: If top_n is not positive.
+        TypeError: If top_n is not an integer.
+    """
+    if top_n <= 0:
+        raise ValueError("top_n must be a positive integer")
+    if not isinstance(top_n, int):
+        raise TypeError("top_n must be an integer")
+    
+    sorted_centrality = sorted(centrality_dict.items(), key=lambda item: item[1], reverse=True)
+    return sorted_centrality[:top_n]
