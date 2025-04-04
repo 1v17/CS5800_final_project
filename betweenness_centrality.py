@@ -85,7 +85,7 @@ def betweenness_centrality(graph, normalized=True, directed=False):
     scale = 1.0
     # normalize for the size of the graph
     if normalized and len(graph) > 2:
-        scale = 1 / ((len(graph) - 1) * (len(graph) - 2))
+        scale = 2 / ((len(graph) - 1) * (len(graph) - 2))
 
     # the centrality scores need to be divided by two if the graph is undirected
     if not directed: 
