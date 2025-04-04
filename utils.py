@@ -91,3 +91,29 @@ def get_top_centrality(centrality_dict: dict, top_n: int=10) -> list:
     
     sorted_centrality = sorted(centrality_dict.items(), key=lambda item: item[1], reverse=True)
     return sorted_centrality[:top_n]
+
+def compare_centrality_with_egos(centrality_list: list[tuple], ego_vertices: set) -> None:
+    """
+    Compare centrality scores with ego vertices.
+
+    Args:
+        centrality_dict (list[tuple]): List of tuples containing nodes and their centrality scores.
+        ego_file_path (str): Path to the file containing ego vertices.
+
+    Returns:
+        dict: Dictionary with ego vertices and their centrality scores.
+    
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        ValueError: If the file contains invalid data.
+    """
+    centrality_nodes = set(node for node, _ in centrality_list)
+    correct_ego_vertices = ego_vertices.intersection(centrality_nodes)
+    incorrect_ego_vertices = ego_vertices - correct_ego_vertices
+    missed_ego_vertices = centrality_nodes - correct_ego_vertices
+    print("Correct ego vertices:", correct_ego_vertices)
+    if incorrect_ego_vertices:
+        print("Incorrect prediction of top centrality vertices:", incorrect_ego_vertices)
+    if missed_ego_vertices:
+        print("Missed ego vertices:", missed_ego_vertices)
+    

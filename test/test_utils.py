@@ -4,7 +4,7 @@ Run with `python -m unittest -v test/test_utils.py` from root directory.
 """
 
 from unittest import TestCase, main
-from utils import create_adjacency_list, create_adjacency_matrix
+from utils import create_adjacency_list, create_adjacency_matrix, get_top_centrality
 
 PATH = "test/test_files/"
 
@@ -112,6 +112,83 @@ class TestGraphConversionFunctions(TestCase):
             create_adjacency_list(PATH + "invalid_line.txt")
         with self.assertRaises(ValueError):
             create_adjacency_matrix(PATH + "invalid_line.txt")
+    
+    def test_get_top_centrality_basic(self):
+        """
+        Test basic functionality with a small centrality dictionary.
+        """
+        centrality_dict = {'A': 0.5, 'B': 0.8, 'C': 0.3, 'D': 0.9}
+        top_n = 2
+        expected = [('D', 0.9), ('B', 0.8)]
+        result = get_top_centrality(centrality_dict, top_n)
+        self.assertEqual(result, expected)
+
+    def test_get_top_centrality_all_nodes(self):
+        """
+        Test when top_n is equal to the number of nodes in the dictionary.
+        """
+        centrality_dict = {'A': 0.5, 'B': 0.8, 'C': 0.3}
+        top_n = 3
+        expected = [('B', 0.8), ('A', 0.5), ('C', 0.3)]
+        result = get_top_centrality(centrality_dict, top_n)
+        self.assertEqual(result, expected)
+
+    def test_get_top_centrality_more_than_available(self):
+        """
+        Test when top_n is greater than the number of nodes in the dictionary.
+        """
+        centrality_dict = {'A': 0.5, 'B': 0.8}
+        top_n = 5
+        expected = [('B', 0.8), ('A', 0.5)]
+        result = get_top_centrality(centrality_dict, top_n)
+        self.assertEqual(result, expected)
+
+    def test_get_top_centrality_empty_dict(self):
+        """
+        Test when the centrality dictionary is empty.
+        """
+        centrality_dict = {}
+        top_n = 3
+        expected = []
+        result = get_top_centrality(centrality_dict, top_n)
+        self.assertEqual(result, expected)
+
+    def test_get_top_centrality_negative_top_n(self):
+        """
+        Test when top_n is negative.
+        """
+        centrality_dict = {'A': 0.5, 'B': 0.8}
+        top_n = -1
+        with self.assertRaises(ValueError):
+            get_top_centrality(centrality_dict, top_n)
+
+    def test_get_top_centrality_zero_top_n(self):
+        """
+        Test when top_n is zero.
+        """
+        centrality_dict = {'A': 0.5, 'B': 0.8}
+        top_n = 0
+        with self.assertRaises(ValueError):
+            get_top_centrality(centrality_dict, top_n)
+
+    def test_get_top_centrality_non_integer_top_n(self):
+        """
+        Test when top_n is not an integer.
+        """
+        centrality_dict = {'A': 0.5, 'B': 0.8}
+        top_n = 2.5
+        with self.assertRaises(TypeError):
+            get_top_centrality(centrality_dict, top_n)
+
+    def test_get_top_centrality_ties(self):
+        """
+        Test when there are ties in centrality scores.
+        """
+        centrality_dict = {'A': 0.5, 'B': 0.8, 'C': 0.8, 'D': 0.3}
+        top_n = 2
+        expected = [('B', 0.8), ('C', 0.8)]  # Order of ties depends on sorting
+        result = get_top_centrality(centrality_dict, top_n)
+        self.assertEqual(result, expected[:top_n])
 
 
 if __name__ == "__main__":
