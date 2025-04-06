@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def create_adjacency_list(edges_file_path: str) -> dict:
     """
     Reads an undirected, unweighted graph from a file and returns its adjacency list representation.
@@ -32,7 +35,8 @@ def create_adjacency_list(edges_file_path: str) -> dict:
     return adjacency_list
 
 
-def create_adjacency_matrix(edges_file_path: str) -> list[list[int]]:
+def create_adjacency_matrix(edges_file_path: str) -> np.ndarray:
+
     """
     Reads an undirected, unweighted graph from a file and returns its adjacency matrix representation.
 
@@ -40,7 +44,7 @@ def create_adjacency_matrix(edges_file_path: str) -> list[list[int]]:
         edges_file_path (str): Path to the file containing edges.
 
     Returns:
-        list: A 2D list representing the adjacency matrix of the graph.
+        np.ndarray: A NumPy array representing the adjacency matrix of the graph.
 
     Raises:
         FileNotFoundError: If the file does not exist.
@@ -60,8 +64,8 @@ def create_adjacency_matrix(edges_file_path: str) -> list[list[int]]:
     except FileNotFoundError:
         raise FileNotFoundError(f"File not found: {edges_file_path}")
 
-    # Initialize a (max_vertex + 1) x (max_vertex + 1) matrix with zeros
-    adjacency_matrix = [[0] * (max_vertex + 1) for _ in range(max_vertex + 1)]
+    # Initialize a (max_vertex + 1) x (max_vertex + 1) matrix with zeros using NumPy
+    adjacency_matrix = np.zeros((max_vertex + 1, max_vertex + 1), dtype=int)
 
     for u, v in edges:
         adjacency_matrix[u][v] = 1
@@ -69,12 +73,14 @@ def create_adjacency_matrix(edges_file_path: str) -> list[list[int]]:
 
     return adjacency_matrix
 
-def get_top_centrality(centrality_dict: dict, top_n: int=10) -> list:
+
+def get_top_centrality(centrality, top_n: int=10) -> list:
     """
     Get the top N nodes based on their centrality scores.
 
     Args:
-        centrality_dict (dict): Dictionary of centrality scores.
+
+        centrality (Union[dict, np.ndarray]): Dictionary or array of centrality scores.
         top_n (int): Number of top nodes to return.
 
     Returns:
@@ -89,8 +95,17 @@ def get_top_centrality(centrality_dict: dict, top_n: int=10) -> list:
     if not isinstance(top_n, int):
         raise TypeError("top_n must be an integer")
     
-    sorted_centrality = sorted(centrality_dict.items(), key=lambda item: item[1], reverse=True)
-    return sorted_centrality[:top_n]
+    if isinstance(centrality, dict):
+        # Handle dictionary input
+        sorted_centrality = sorted(centrality.items(), key=lambda item: item[1], reverse=True)
+        return sorted_centrality[:top_n]
+    elif isinstance(centrality, np.ndarray):
+        # Convert array to (node_id, centrality_score) tuples
+        centrality_tuples = [(i, score) for i, score in enumerate(centrality)]
+        sorted_centrality = sorted(centrality_tuples, key=lambda item: item[1], reverse=True)
+        return sorted_centrality[:top_n]
+    else:
+        raise TypeError("centrality must be a dictionary or numpy array")
 
 def compare_centrality_with_egos(centrality_list: list[tuple], ego_vertices: set) -> None:
     """
@@ -116,4 +131,3 @@ def compare_centrality_with_egos(centrality_list: list[tuple], ego_vertices: set
         print("Incorrect prediction of top centrality vertices:", incorrect_ego_vertices)
     if missed_ego_vertices:
         print("Missed ego vertices:", missed_ego_vertices)
-    
