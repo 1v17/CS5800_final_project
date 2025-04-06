@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def create_adjacency_list(edges_file_path: str) -> dict:
     """
     Reads an undirected, unweighted graph from a file and returns its adjacency list representation.
@@ -35,6 +36,7 @@ def create_adjacency_list(edges_file_path: str) -> dict:
 
 
 def create_adjacency_matrix(edges_file_path: str) -> np.ndarray:
+
     """
     Reads an undirected, unweighted graph from a file and returns its adjacency matrix representation.
 
@@ -71,11 +73,13 @@ def create_adjacency_matrix(edges_file_path: str) -> np.ndarray:
 
     return adjacency_matrix
 
+
 def get_top_centrality(centrality, top_n: int=10) -> list:
     """
     Get the top N nodes based on their centrality scores.
 
     Args:
+
         centrality (Union[dict, np.ndarray]): Dictionary or array of centrality scores.
         top_n (int): Number of top nodes to return.
 
