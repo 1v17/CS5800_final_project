@@ -8,14 +8,15 @@ EGO_VERTICES = set([0, 107, 348, 414, 686, 698, 1684, 1912, 3437, 3980])
 
 def main():
     # # Calculate betweenness centrality for a graph
+    print("Calculating Betweenness Centrality...")
     graph = create_adjacency_list(DATA_FILE)
     centrality = betweenness_centrality(graph, normalized=True, directed=False)
     top_centrality_nodes = get_top_centrality(centrality, top_n=10)
     print("Top 10 Centrality:", top_centrality_nodes)
-    print("\n")
     compare_centrality_with_egos(top_centrality_nodes, EGO_VERTICES)
 
     # Calculate eigenvector centrality for a graph
+    print("\nCalculating Eigenvector Centrality...")
     matrix = create_adjacency_matrix(DATA_FILE)
     e_centrality = eigenvector_centrality(matrix)
     top_eigenvector_centrality_nodes = get_top_centrality(e_centrality, top_n=10)
