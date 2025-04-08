@@ -1,6 +1,9 @@
 import numpy as np
 
-def eigenvector_centrality(matrix, max_iter=100, tol=1e-6):
+ITERATION = 100
+TORLERANCE = 1e-6
+
+def eigenvector_centrality(matrix, max_iter=ITERATION, tol=TORLERANCE):
     """
     Calculate the eigenvector centrality of a graph given by its adjacency matrix.
     
