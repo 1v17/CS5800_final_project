@@ -5,7 +5,7 @@ DEFAULT_MAX_ITERATIONS = 100
 DEFAULT_CONVERGENCE_THRESHOLD = 1e-06
 
 
-def page_rank(graph: dict, damping_factor: float=DEFAULT_FACTOR,
+def page_rank_centrality(graph: dict, damping_factor: float=DEFAULT_FACTOR,
               max_iterations: int=DEFAULT_MAX_ITERATIONS, 
               convergence_threshold: float=DEFAULT_CONVERGENCE_THRESHOLD) -> dict:
     """
@@ -43,7 +43,7 @@ def page_rank(graph: dict, damping_factor: float=DEFAULT_FACTOR,
                       neighbors in graph.items() if len(neighbors) == 0}
 
     # Step 2: Power iteration
-    for iteration in range(max_iterations):
+    for _ in range(max_iterations):
         new_ranks = defaultdict(float)
 
         # Distribute ranks from each node
