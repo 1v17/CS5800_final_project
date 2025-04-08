@@ -3,9 +3,6 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from matplotlib.colors import Normalize
-from eigenvector import eigenvector_centrality
-from page_rank import page_rank_centrality
-from betweenness_centrality import betweenness_centrality
 
 DEFLAULT_NODES = 10
 FIGURE_SIZE = 12
