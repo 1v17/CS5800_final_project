@@ -18,6 +18,7 @@ NODE_SIZE = 300
 EDGE_WIDTH = 0.5
 HIGHLIGHT_SIZE_FACTOR = 1.2
 COLOR_MAP = cm.viridis
+GARPH_PATH = "graphs/"
 
 
 def create_adjacency_list(edges_file_path: str) -> dict:
@@ -272,5 +273,5 @@ def plot_social_network(
     
     # Save the figure
     output_filename = f"{centrality_measure.title()} Graph.png"
-    plt.savefig(output_filename, bbox_inches='tight')
+    plt.savefig(GARPH_PATH + output_filename, bbox_inches='tight')
     print(f"Social network visualization saved as {output_filename}")
