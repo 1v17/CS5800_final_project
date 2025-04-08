@@ -7,16 +7,20 @@ from matplotlib.colors import Normalize
 DEFLAULT_NODES = 10
 FIGURE_SIZE = 12
 LABEL_SIZE = 10
+POSITION_SEED = 42
 EDGE_COLOR = "gray"
+NODE_COLOR = "skyblue"
+EGO_NODE_COLOR = "coral"
+EDGE_WIDTH = 0.5
 NODE_EDGE_COLOR = "black"
 LABEL_FONT_COLOR = "darkorange"
+EGO_NODE_LABEL_COLOR = "black"
 LEGEND_COLOR = "white"
 TRANSPARENCY = 0.8
-EDGE_WIDTH = 1
 DEFAULT_LAYOUT = "spring"
-NODE_SIZE = 300
-EDGE_WIDTH = 0.5
-HIGHLIGHT_SIZE_FACTOR = 1.2
+NODE_SIZE = 100
+SAMLL_NODE_SIZE = 10
+HIGHLIGHT_NODE_SIZE = 360
 COLOR_MAP = cm.viridis
 GARPH_PATH = "graphs/"
 
@@ -153,13 +157,11 @@ def compare_centrality_with_egos(centrality_list: list[tuple], ego_vertices: set
         print("Missed ego vertices:", missed_ego_vertices)
 
 
-def plot_social_network(
+def plot_social_network_with_centrality(
     adjacency_list,
     centrality,
     centrality_measure,
     top_nodes,
-    node_size_factor=NODE_SIZE,
-    edge_width=EDGE_WIDTH,
     layout_algorithm=DEFAULT_LAYOUT,
 ):
     """
@@ -170,8 +172,6 @@ def plot_social_network(
         centrality (dict): Centrality measure to visualize ('betweenness', 'eigenvector', 'pagerank').
         centrality_measure (str): The centrality measure used for visualization.
         top_nodes (list): List of top N nodes to highlight.
-        node_size_factor (int): Scaling factor for node sizes.
-        edge_width (float): Width of edges in the graph.
         layout_algorithm (str): Layout algorithm ('spring', 'circular', 'kamada_kawai').
     """
     # Load adjacency list
@@ -187,14 +187,14 @@ def plot_social_network(
     norm = Normalize(vmin=min_centrality, vmax=max_centrality)
     
     # Set node sizes based on normalized centrality
-    node_sizes = [norm(centrality[node]) * node_size_factor for node in nx_graph.nodes()]
+    node_sizes = [norm(centrality[node]) * NODE_SIZE for node in nx_graph.nodes()]
     
     # Create set of top nodes for highlighting
     top_nodes_set = set(node for node, _ in top_nodes)
     
     # Choose layout based on specified algorithm
     if layout_algorithm == "spring":
-        pos = nx.spring_layout(nx_graph, seed=42)
+        pos = nx.spring_layout(nx_graph, seed=POSITION_SEED)
     elif layout_algorithm == "circular":
         pos = nx.circular_layout(nx_graph)
     elif layout_algorithm == "kamada_kawai":
@@ -220,7 +220,7 @@ def plot_social_network(
     nx.draw_networkx_edges(
         nx_graph,
         pos,
-        width=edge_width,
+        width=EDGE_WIDTH,
         edge_color=EDGE_COLOR,
         alpha=TRANSPARENCY,
         ax=ax
@@ -228,8 +228,7 @@ def plot_social_network(
     
     # Draw the top nodes with a different border color to highlight them
     if top_nodes_set:
-        top_node_sizes = [norm(centrality[node]) * node_size_factor * \
-                          HIGHLIGHT_SIZE_FACTOR for node in top_nodes_set]
+        top_node_sizes = [norm(centrality[node]) * HIGHLIGHT_NODE_SIZE for node in top_nodes_set]
         nx.draw_networkx_nodes(
             nx_graph,
             pos,
@@ -273,5 +272,91 @@ def plot_social_network(
     
     # Save the figure
     output_filename = f"{centrality_measure.title()} Graph.png"
+    plt.savefig(GARPH_PATH + output_filename, bbox_inches='tight')
+    print(f"Social network visualization saved as {output_filename}")
+
+
+def plot_social_network(adjacency_list:dict, ego_nodes:set) -> None:
+    """
+    Visualizes a social network using NetworkX and Matplotlib.
+
+    Args:
+        adjacency_list (dict): Adjacency list data as a dictionary of adjacency_list.
+        ego_nodes (set): Set of ego nodes to highlight.
+
+    Returns:
+        None
+    """
+    # Load adjacency list
+    if not isinstance(adjacency_list, dict):
+        raise TypeError("adjacency_list must be a dictionary")
+
+    # Create NetworkX graph from adjacency list
+    nx_graph = nx.Graph(adjacency_list)
+    
+    # Choose layout based on specified algorithm
+    pos = nx.spring_layout(nx_graph, seed=POSITION_SEED)
+
+    # Create figure and axis
+    _, ax = plt.subplots(figsize=(FIGURE_SIZE, FIGURE_SIZE))
+
+    # Draw all nodes with color based on centrality
+    nx.draw_networkx_nodes(
+        nx_graph,
+        pos,
+        node_color=NODE_COLOR,
+        node_size=SAMLL_NODE_SIZE,
+        alpha=TRANSPARENCY,
+        ax=ax
+    )
+    
+    # Draw edges
+    nx.draw_networkx_edges(
+        nx_graph,
+        pos,
+        width=EDGE_WIDTH,
+        edge_color=EDGE_COLOR,
+        alpha=TRANSPARENCY,
+        ax=ax
+    )
+    
+    # Highlight ego nodes with a different node color
+    ego_node_size = [HIGHLIGHT_NODE_SIZE for _ in ego_nodes]
+    nx.draw_networkx_nodes(
+        nx_graph,
+        pos,
+        nodelist=list(ego_nodes),
+        node_size=ego_node_size,
+        node_color=EGO_NODE_COLOR,
+        edgecolors=NODE_EDGE_COLOR,
+        linewidths=EDGE_WIDTH,
+        alpha=TRANSPARENCY,
+        ax=ax
+    )
+
+    # Add node labels for ego nodes only to prevent overcrowding
+    labels = {node: str(node) for node in ego_nodes}
+    nx.draw_networkx_labels(
+        nx_graph,
+        pos,
+        labels=labels,
+        font_size=LABEL_SIZE,
+        font_color=EGO_NODE_LABEL_COLOR,
+        font_weight='bold',
+        ax=ax
+    )
+
+    # Add legend for ego nodes
+    legend_elements = [plt.Line2D([0], [0], marker='o', color=LEGEND_COLOR, 
+                                 markerfacecolor=EGO_NODE_COLOR, markersize=LABEL_SIZE, 
+                                 label=f'Ego Nodes')]
+    ax.legend(handles=legend_elements, loc='upper right')
+
+    # Set title and remove axis
+    plt.title("SNAP Facebook Social Network Visualization")
+    plt.axis('off')
+
+    # Save the figure
+    output_filename = "Facebook Dataset.png"
     plt.savefig(GARPH_PATH + output_filename, bbox_inches='tight')
     print(f"Social network visualization saved as {output_filename}")
