@@ -16,40 +16,18 @@ def eigenvector_centrality(matrix, max_iter=ITERATION, tol=TORLERANCE):
     - centrality (dict): Dictionary mapping node indices to centrality scores.
     """
     n = matrix.shape[0]
-    
-    # Start with a non-uniform vector to break symmetry
-    # Using random initialization is better than uniform values
-    x = np.random.rand(n)
-    x = x / np.linalg.norm(x)  # Normalize the initial vector
+    centrality = np.ones(n)  # Initialize with all ones
     
     for _ in range(max_iter):
-        x_new = matrix @ x
-        
-        # Check if the vector is close to zero
-        norm = np.linalg.norm(x_new)
-        if norm < 1e-10:
-            return {i: 0.0 for i in range(n)}  # Return zero centrality if the norm is too small
-            
-        x_new = x_new / norm  # Normalize
+        new_centrality = matrix @ centrality  # Matrix-vector multiplication
+        new_centrality = new_centrality / np.linalg.norm(new_centrality)  # Normalize
         
         # Check for convergence
-        if np.linalg.norm(x - x_new) < tol:
+        if np.linalg.norm(new_centrality - centrality) < tol:
             break
             
-        x = x_new
+        centrality = new_centrality
     
-    # Ensure the results are positive (convention for eigenvector centrality)
-    if np.any(x < 0):
-        x = -x
-        
-    # For highly symmetric cases (like complete graphs), ensure more numerical stability
-    # by enforcing theoretical equality where appropriate
-    if np.allclose(matrix, matrix.T):  # Symmetric matrix
-        # Check if matrix is special case like simple path, cycle, or complete graph
-        row_sums = np.sum(matrix, axis=1)
-        if np.allclose(row_sums, row_sums[0], rtol=1e-10, atol=1e-10):  # All nodes have same degree
-            # This includes cases like complete graphs, cycles, etc.
-            x = np.ones(n) / np.sqrt(n)  # Equal centrality for all nodes
-    
+    # Normalize the centrality scores
     # Convert the numpy array to a dictionary
-    return {i: float(score) for i, score in enumerate(x)}
+    return {i: float(score) for i, score in enumerate(centrality)}
