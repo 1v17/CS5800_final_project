@@ -1,4 +1,19 @@
 import numpy as np
+import networkx as nx
+import matplotlib.pyplot as plt
+from matplotlib.colors import Normalize
+from eigenvector import eigenvector_centrality
+from page_rank import page_rank_centrality
+from betweenness_centrality import betweenness_centrality
+
+DEFLAULT_NODES = 10
+FIGURE_SIZE = 12
+EDGE_COLOR = "gray"
+NODE_COLOR = "skyblue"
+DEFAULT_LAYOUT = "spring"
+NODE_SIZE = 1000
+EDGE_WIDTH = 0.5
+HIGHLIGHT_SIZE_FACTOR = 1.5
 
 
 def create_adjacency_list(edges_file_path: str) -> dict:
@@ -74,7 +89,7 @@ def create_adjacency_matrix(edges_file_path: str) -> np.ndarray:
     return adjacency_matrix
 
 
-def get_top_centrality(centrality, top_n: int=10) -> list:
+def get_top_centrality(centrality, top_n: int=DEFLAULT_NODES) -> list:
     """
     Get the top N nodes based on their centrality scores.
 
@@ -131,3 +146,83 @@ def compare_centrality_with_egos(centrality_list: list[tuple], ego_vertices: set
         print("Incorrect prediction of top centrality vertices:", incorrect_ego_vertices)
     if missed_ego_vertices:
         print("Missed ego vertices:", missed_ego_vertices)
+
+
+def plot_social_network(
+    adjacency_list,
+    centrality,
+    centrality_measure,
+    top_nodes,
+    node_size_factor=NODE_SIZE,
+    edge_width=EDGE_WIDTH,
+    layout_algorithm=DEFAULT_LAYOUT,
+):
+    """
+    Visualizes a social network using NetworkX and Matplotlib.
+
+    Args:
+        adjacency_list (dict): Adjacency list data as a dictionary of adjacency_list.
+        centrality (dict): Centrality measure to visualize ('betweenness', 'eigenvector', 'pagerank').
+        centrality_measure (str): The centrality measure used for visualization.
+        top_nodes (list): List of top N nodes to highlight.
+        node_size_factor (int): Scaling factor for node sizes.
+        edge_width (float): Width of edges in the graph.
+        layout_algorithm (str): Layout algorithm ('spring', 'circular', 'kamada_kawai').
+    """
+    # Load adjacency list
+    if not isinstance(adjacency_list, dict):
+        raise TypeError("adjacency_list must be a dictionary")
+
+    nx_graph = nx.Graph(adjacency_list)
+
+    # Normalize centrality values for visualization
+    centrality_values = np.array(list(centrality.values()))
+    norm = Normalize(vmin=centrality_values.min(), vmax=centrality_values.max())
+    node_sizes = [norm(centrality[node]) * node_size_factor for node in nx_graph.nodes]
+
+    # Highlight top N influential nodes
+    top_nodes_set = {node for node, _ in top_nodes}
+
+    # Choose layout
+    match layout_algorithm:
+        case "spring":
+            pos = nx.spring_layout(nx_graph)
+        case "circular":
+            pos = nx.circular_layout(nx_graph)
+        case "kamada_kawai":
+            pos = nx.kamada_kawai_layout(nx_graph)
+        case _:
+            raise ValueError("Invalid layout_algorithm. Choose 'spring', 'circular', or 'kamada_kawai'.")
+
+    # Plot the graph
+    plt.figure(figsize=(FIGURE_SIZE, FIGURE_SIZE))
+    nx.draw(
+        nx_graph,
+        pos,
+        with_labels=True,
+        node_size=node_sizes,
+        edge_color=EDGE_COLOR,
+        width=edge_width,
+        cmap=plt.cm.viridis,
+        node_color=[centrality[node] for node in nx_graph.nodes],
+    )
+
+    # Highlight top nodes
+    nx.draw_networkx_nodes(
+        nx_graph,
+        pos,
+        nodelist=top_nodes_set,
+        node_size=[node_size_factor * HIGHLIGHT_SIZE_FACTOR] * len(top_nodes_set),
+        node_color=NODE_COLOR,
+        label=f"Top {len(top_nodes)} Nodes",
+    )
+
+    # Add legend and title
+    plt.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=plt.cm.viridis), label="Centrality Score")
+    plt.title(f"Social Network Visualization ({centrality_measure.capitalize()} Centrality)")
+    plt.legend(loc="upper right")
+
+    # Save the plot
+    output_file = f"{centrality_measure}_graph.png"
+    plt.savefig(output_file)
+    plt.show()
