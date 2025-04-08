@@ -4,6 +4,7 @@ Run with `python -m unittest -v test/test_betweeness.py` from root directory.
 """
 from unittest import TestCase, main
 from betweenness_centrality import betweenness_centrality
+import networkx as nx
 
 PLACES = 6  # Number of decimal places for comparison
 
@@ -20,11 +21,12 @@ class TestBetweennessCentrality(TestCase):
             'C': ['B', 'D'],
             'D': ['C']
         }
-        expected = {'A': 0.0, 'B': 2/3, 'C': 2/3, 'D': 0.0}
+        nx_graph = nx.Graph(graph)
+        expected = nx.betweenness_centrality(nx_graph, normalized=True)
         result = betweenness_centrality(graph, normalized=True, directed=False)
         for node in expected:
             self.assertAlmostEqual(result[node], expected[node], places=PLACES)
-    
+
     def test_line_graph_unnormalized(self):
         """
         Test Case: Line Graph (unnormalized)
@@ -36,7 +38,8 @@ class TestBetweennessCentrality(TestCase):
             'C': ['B', 'D'],
             'D': ['C']
         }
-        expected = {'A': 0.0, 'B': 2.0, 'C': 2.0, 'D': 0.0}
+        nx_graph = nx.Graph(graph)
+        expected = nx.betweenness_centrality(nx_graph, normalized=False)
         result = betweenness_centrality(graph, normalized=False, directed=False)
         for node in expected:
             self.assertAlmostEqual(result[node], expected[node], places=PLACES)
@@ -53,11 +56,12 @@ class TestBetweennessCentrality(TestCase):
             'D': ['A'],
             'E': ['A']
         }
-        expected = {'A': 1.0, 'B': 0.0, 'C': 0.0, 'D': 0.0, 'E': 0.0}
+        nx_graph = nx.Graph(graph)
+        expected = nx.betweenness_centrality(nx_graph, normalized=True)
         result = betweenness_centrality(graph, normalized=True, directed=False)
         for node in expected:
             self.assertAlmostEqual(result[node], expected[node], places=PLACES)
-    
+
     def test_star_graph_unnormalized(self):
         """
         Test Case: Star Graph (unnormalized)
@@ -70,11 +74,12 @@ class TestBetweennessCentrality(TestCase):
             'D': ['A'],
             'E': ['A']
         }
-        expected = {'A': 6.0, 'B': 0.0, 'C': 0.0, 'D': 0.0, 'E': 0.0}
+        nx_graph = nx.Graph(graph)
+        expected = nx.betweenness_centrality(nx_graph, normalized=False)
         result = betweenness_centrality(graph, normalized=False, directed=False)
         for node in expected:
             self.assertAlmostEqual(result[node], expected[node], places=PLACES)
-    
+
     def test_cycle_graph_normalized(self):
         """
         Test Case: Cycle Graph
@@ -88,14 +93,15 @@ class TestBetweennessCentrality(TestCase):
             'C': ['B', 'D'],
             'D': ['A', 'C']
         }
-        expected = {'A': 1/6, 'B': 1/6, 'C': 1/6, 'D': 1/6}
+        nx_graph = nx.Graph(graph)
+        expected = nx.betweenness_centrality(nx_graph, normalized=True)
         result = betweenness_centrality(graph, normalized=True, directed=False)
         for node in expected:
             self.assertAlmostEqual(result[node], expected[node], places=PLACES)
 
     def test_cycle_graph_unnormalized(self):
         """
-        Test Case: Cycle Graph
+        Test Case: Cycle Graph (unnormalized)
         A -- B
         |    |
         D -- C
@@ -106,7 +112,8 @@ class TestBetweennessCentrality(TestCase):
             'C': ['B', 'D'],
             'D': ['A', 'C']
         }
-        expected = {'A': 0.5, 'B': 0.5, 'C': 0.5, 'D': 0.5}
+        nx_graph = nx.Graph(graph)
+        expected = nx.betweenness_centrality(nx_graph, normalized=False)
         result = betweenness_centrality(graph, normalized=False, directed=False)
         for node in expected:
             self.assertAlmostEqual(result[node], expected[node], places=PLACES)
@@ -126,7 +133,8 @@ class TestBetweennessCentrality(TestCase):
             'E': ['B', 'D', 'F'],
             'F': ['C', 'E']
         }
-        expected = {'A': 1/12, 'B': 1/3, 'C': 1/12, 'D': 1/12, 'E': 1/3, 'F': 1/12}
+        nx_graph = nx.Graph(graph)
+        expected = nx.betweenness_centrality(nx_graph, normalized=True)
         result = betweenness_centrality(graph, normalized=True, directed=False)
         for node in expected:
             self.assertAlmostEqual(result[node], expected[node], places=PLACES)
@@ -146,8 +154,9 @@ class TestBetweennessCentrality(TestCase):
             'E': ['B', 'D', 'F'],
             'F': ['C', 'E']
         }
-        expected = {'A': 5/6, 'B': 10/3, 'C': 5/6, 'D': 5/6, 'E': 10/3, 'F':5/6}
-        result = betweenness_centrality(graph, normalized=False, directed=False)
+        nx_graph = nx.Graph(graph)
+        expected = nx.betweenness_centrality(nx_graph, normalized=False)
+        result = betweenness_centrality(graph, normalized=False)
         for node in expected:
             self.assertAlmostEqual(result[node], expected[node], places=PLACES)
 
@@ -162,11 +171,12 @@ class TestBetweennessCentrality(TestCase):
             'C': ['D'],
             'D': []
         }
-        expected = {'A': 0.0, 'B': 2/3, 'C': 2/3, 'D': 0.0}
+        nx_graph = nx.DiGraph(graph)
+        expected = nx.betweenness_centrality(nx_graph, normalized=True)
         result = betweenness_centrality(graph, normalized=True, directed=True)
         for node in expected:
             self.assertAlmostEqual(result[node], expected[node], places=PLACES)
-    
+
     def test_directed_graph_unnormalized(self):
         """
         Test Case: Directed Line Graph (unnormalized)
@@ -178,7 +188,8 @@ class TestBetweennessCentrality(TestCase):
             'C': ['D'],
             'D': []
         }
-        expected = {'A': 0.0, 'B': 2.0, 'C': 2.0, 'D': 0.0}
+        nx_graph = nx.DiGraph(graph)
+        expected = nx.betweenness_centrality(nx_graph, normalized=False)
         result = betweenness_centrality(graph, normalized=False, directed=True)
         for node in expected:
             self.assertAlmostEqual(result[node], expected[node], places=PLACES)
