@@ -17,20 +17,20 @@ def main():
         adjacency_list = create_adjacency_list(DATA_FILE)
 
         # Calculate betweenness centrality for a graph
-        print("Calculating Betweenness Centrality...")
-        b_centrality = betweenness_centrality(adjacency_list, normalized=True, directed=False)
-        top_bcentrality_nodes = get_top_centrality(b_centrality, top_n=DEFLAULT_NODES)
-        print("Top 10 Centrality:", top_bcentrality_nodes)
-        compare_centrality_with_egos(top_bcentrality_nodes, EGO_VERTICES)
-        plot_social_network(adjacency_list, b_centrality, "betweenness_centrality", top_bcentrality_nodes)
+        # print("Calculating Betweenness Centrality...")
+        # b_centrality = betweenness_centrality(adjacency_list, normalized=True, directed=False)
+        # top_bcentrality_nodes = get_top_centrality(b_centrality, top_n=DEFLAULT_NODES)
+        # print("Top 10 Centrality:", top_bcentrality_nodes)
+        # compare_centrality_with_egos(top_bcentrality_nodes, EGO_VERTICES)
+        # plot_social_network(adjacency_list, b_centrality, "betweenness_centrality", top_bcentrality_nodes)
 
         # Calculate eigenvector centrality for a graph
-        print("\nCalculating Eigenvector Centrality...")
-        e_centrality = eigenvector_centrality(adjacency_matrix)
-        top_eigenvector_centrality_nodes = get_top_centrality(e_centrality, top_n=DEFLAULT_NODES)
-        print("Top 10 Eigenvector Centrality:", top_eigenvector_centrality_nodes)
-        compare_centrality_with_egos(top_eigenvector_centrality_nodes, EGO_VERTICES)
-        plot_social_network(adjacency_list, e_centrality, "eigenvector_centrality", top_eigenvector_centrality_nodes)
+        # print("\nCalculating Eigenvector Centrality...")
+        # e_centrality = eigenvector_centrality(adjacency_matrix)
+        # top_eigenvector_centrality_nodes = get_top_centrality(e_centrality, top_n=DEFLAULT_NODES)
+        # print("Top 10 Eigenvector Centrality:", top_eigenvector_centrality_nodes)
+        # compare_centrality_with_egos(top_eigenvector_centrality_nodes, EGO_VERTICES)
+        # plot_social_network(adjacency_list, e_centrality, "eigenvector_centrality", top_eigenvector_centrality_nodes)
 
         # Calculate PageRank centrality for a graph
         print("\nCalculating PageRank Centrality...")
@@ -38,7 +38,7 @@ def main():
         top_pagerank_centrality_nodes = get_top_centrality(pagerank_centrality, top_n=DEFLAULT_NODES)
         print("Top 10 PageRank Centrality:", top_pagerank_centrality_nodes)
         compare_centrality_with_egos(top_pagerank_centrality_nodes, EGO_VERTICES)
-        plot_social_network(adjacency_list, pagerank_centrality, "pagerank_centrality", top_pagerank_centrality_nodes)
+        plot_social_network(adjacency_list, pagerank_centrality, "page rank", top_pagerank_centrality_nodes)
 
 
     except FileNotFoundError as e:

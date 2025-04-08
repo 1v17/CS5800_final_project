@@ -1,6 +1,7 @@
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 from matplotlib.colors import Normalize
 from eigenvector import eigenvector_centrality
 from page_rank import page_rank_centrality
@@ -8,12 +9,17 @@ from betweenness_centrality import betweenness_centrality
 
 DEFLAULT_NODES = 10
 FIGURE_SIZE = 12
+LABEL_SIZE = 10
 EDGE_COLOR = "gray"
 NODE_COLOR = "skyblue"
+MARKER_COLOR = "deepskyblue"
+NODE_EDGE_COLOR = "white"
+EDGE_WIDTH = 1
 DEFAULT_LAYOUT = "spring"
-NODE_SIZE = 1000
+NODE_SIZE = 300
 EDGE_WIDTH = 0.5
-HIGHLIGHT_SIZE_FACTOR = 1.5
+HIGHLIGHT_SIZE_FACTOR = 1.2
+COLOR_MAP = "viridis"
 
 
 def create_adjacency_list(edges_file_path: str) -> dict:
@@ -173,56 +179,98 @@ def plot_social_network(
     if not isinstance(adjacency_list, dict):
         raise TypeError("adjacency_list must be a dictionary")
 
+    # Create NetworkX graph from adjacency list
     nx_graph = nx.Graph(adjacency_list)
-
+    
     # Normalize centrality values for visualization
-    centrality_values = np.array(list(centrality.values()))
-    norm = Normalize(vmin=centrality_values.min(), vmax=centrality_values.max())
-    node_sizes = [norm(centrality[node]) * node_size_factor for node in nx_graph.nodes]
-
-    # Highlight top N influential nodes
-    top_nodes_set = {node for node, _ in top_nodes}
-
-    # Choose layout
-    match layout_algorithm:
-        case "spring":
-            pos = nx.spring_layout(nx_graph)
-        case "circular":
-            pos = nx.circular_layout(nx_graph)
-        case "kamada_kawai":
-            pos = nx.kamada_kawai_layout(nx_graph)
-        case _:
-            raise ValueError("Invalid layout_algorithm. Choose 'spring', 'circular', or 'kamada_kawai'.")
-
-    # Plot the graph
-    plt.figure(figsize=(FIGURE_SIZE, FIGURE_SIZE))
-    nx.draw(
+    min_centrality = min(centrality.values())
+    max_centrality = max(centrality.values())
+    norm = Normalize(vmin=min_centrality, vmax=max_centrality)
+    
+    # Set node sizes based on normalized centrality
+    node_sizes = [norm(centrality[node]) * node_size_factor for node in nx_graph.nodes()]
+    
+    # Create set of top nodes for highlighting
+    top_nodes_set = set(node for node, _ in top_nodes)
+    
+    # Choose layout based on specified algorithm
+    if layout_algorithm == "spring":
+        pos = nx.spring_layout(nx_graph, seed=42)
+    elif layout_algorithm == "circular":
+        pos = nx.circular_layout(nx_graph)
+    elif layout_algorithm == "kamada_kawai":
+        pos = nx.kamada_kawai_layout(nx_graph)
+    else:
+        raise ValueError("Invalid layout_algorithm. Choose 'spring', 'circular', or 'kamada_kawai'.")
+    
+    # Create figure and axis
+    fig, ax = plt.subplots(figsize=(FIGURE_SIZE, FIGURE_SIZE))
+    
+    # Draw all nodes with color based on centrality
+    nodes = nx.draw_networkx_nodes(
         nx_graph,
         pos,
-        with_labels=True,
         node_size=node_sizes,
-        edge_color=EDGE_COLOR,
-        width=edge_width,
+        node_color=[centrality[node] for node in nx_graph.nodes()],
         cmap=plt.cm.viridis,
-        node_color=[centrality[node] for node in nx_graph.nodes],
+        alpha=0.8,
+        ax=ax
     )
-
-    # Highlight top nodes
-    nx.draw_networkx_nodes(
+    
+    # Draw edges
+    nx.draw_networkx_edges(
         nx_graph,
         pos,
-        nodelist=top_nodes_set,
-        node_size=[node_size_factor * HIGHLIGHT_SIZE_FACTOR] * len(top_nodes_set),
-        node_color=NODE_COLOR,
-        label=f"Top {len(top_nodes)} Nodes",
+        width=edge_width,
+        edge_color=EDGE_COLOR,
+        alpha=0.6,
+        ax=ax
     )
-
-    # Add legend and title
-    plt.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=plt.cm.viridis), label="Centrality Score")
-    plt.title(f"Social Network Visualization ({centrality_measure.capitalize()} Centrality)")
-    plt.legend(loc="upper right")
-
-    # Save the plot
-    output_file = f"{centrality_measure}_graph.png"
-    plt.savefig(output_file)
-    plt.show()
+    
+    # Draw the top nodes with a different border color to highlight them
+    if top_nodes_set:
+        top_node_sizes = [norm(centrality[node]) * node_size_factor * \
+                          HIGHLIGHT_SIZE_FACTOR for node in top_nodes_set]
+        nx.draw_networkx_nodes(
+            nx_graph,
+            pos,
+            nodelist=list(top_nodes_set),
+            node_size=top_node_sizes,
+            node_color=[centrality[node] for node in top_nodes_set],
+            cmap=cm.viridis,
+            edgecolors=NODE_EDGE_COLOR,
+            linewidths=EDGE_WIDTH,
+            ax=ax
+        )
+    
+    # Add node labels for top nodes only to prevent overcrowding
+    labels = {node: str(node) for node in top_nodes_set}
+    nx.draw_networkx_labels(
+        nx_graph,
+        pos,
+        labels=labels,
+        font_size=LABEL_SIZE,
+        font_weight='bold',
+        ax=ax
+    )
+    
+    # Add colorbar
+    sm = plt.cm.ScalarMappable(cmap=plt.cm.viridis, norm=norm)
+    sm.set_array([])
+    cbar = fig.colorbar(sm, ax=ax)
+    cbar.set_label(f'{centrality_measure.capitalize()} Centrality')
+    
+    # Set title and remove axis
+    plt.title(f"Social Network Visualization - {centrality_measure.capitalize()} Centrality")
+    plt.axis('off')
+    
+    # Add legend for top influencers
+    legend_elements = [plt.Line2D([0], [0], marker='o', color='w', 
+                                 markerfacecolor=MARKER_COLOR, markersize=LABEL_SIZE, 
+                                 label=f'Top {len(top_nodes_set)} Influencers')]
+    ax.legend(handles=legend_elements, loc='upper right')
+    
+    # Save the figure
+    output_filename = f"{centrality_measure.title()} Graph.png"
+    plt.savefig(output_filename, bbox_inches='tight')
+    print(f"Social network visualization saved as {output_filename}")
