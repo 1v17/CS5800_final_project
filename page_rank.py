@@ -43,7 +43,9 @@ def page_rank_centrality(graph: dict, damping_factor: float=DEFAULT_FACTOR,
                       neighbors in graph.items() if len(neighbors) == 0}
 
     # Step 2: Power iteration
-    for _ in range(max_iterations):
+    iteration = 0
+    diff = float('inf')
+    while iteration < max_iterations and diff >= convergence_threshold:
         new_ranks = defaultdict(float)
 
         # Distribute ranks from each node
@@ -65,10 +67,9 @@ def page_rank_centrality(graph: dict, damping_factor: float=DEFAULT_FACTOR,
 
         # Check for convergence
         diff = sum(abs(new_ranks[node] - ranks[node]) for node in graph)
-        if diff < convergence_threshold:
-            break
 
         # Update ranks for the next iteration
         ranks = new_ranks
+        iteration += 1
 
     return dict(ranks)
