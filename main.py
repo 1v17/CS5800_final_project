@@ -4,7 +4,7 @@ from eigenvector import eigenvector_centrality
 from page_rank import page_rank_centrality
 
 DATA_FILE = "facebook_data/facebook_combined.txt"
-EGO_VERTICES = set([0, 107, 348, 414, 686, 698, 1684, 1912, 3437, 3980])
+EGO_VERTICES = {0, 107, 348, 414, 686, 698, 1684, 1912, 3437, 3980}
 
 
 def main():
