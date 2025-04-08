@@ -13,7 +13,9 @@ LABEL_SIZE = 10
 EDGE_COLOR = "gray"
 NODE_COLOR = "skyblue"
 MARKER_COLOR = "deepskyblue"
-NODE_EDGE_COLOR = "white"
+NODE_EDGE_COLOR = "black"
+LABEL_FONT_COLOR = "white"
+TRANSPARENCY = 0.8
 EDGE_WIDTH = 1
 DEFAULT_LAYOUT = "spring"
 NODE_SIZE = 300
@@ -207,13 +209,13 @@ def plot_social_network(
     fig, ax = plt.subplots(figsize=(FIGURE_SIZE, FIGURE_SIZE))
     
     # Draw all nodes with color based on centrality
-    nodes = nx.draw_networkx_nodes(
+    nx.draw_networkx_nodes(
         nx_graph,
         pos,
         node_size=node_sizes,
         node_color=[centrality[node] for node in nx_graph.nodes()],
         cmap=plt.cm.viridis,
-        alpha=0.8,
+        alpha=TRANSPARENCY,
         ax=ax
     )
     
@@ -223,7 +225,7 @@ def plot_social_network(
         pos,
         width=edge_width,
         edge_color=EDGE_COLOR,
-        alpha=0.6,
+        alpha=TRANSPARENCY,
         ax=ax
     )
     
@@ -240,6 +242,7 @@ def plot_social_network(
             cmap=cm.viridis,
             edgecolors=NODE_EDGE_COLOR,
             linewidths=EDGE_WIDTH,
+            alpha=TRANSPARENCY,
             ax=ax
         )
     
@@ -250,6 +253,7 @@ def plot_social_network(
         pos,
         labels=labels,
         font_size=LABEL_SIZE,
+        font_color=LABEL_FONT_COLOR,
         font_weight='bold',
         ax=ax
     )
@@ -265,10 +269,10 @@ def plot_social_network(
     plt.axis('off')
     
     # Add legend for top influencers
-    legend_elements = [plt.Line2D([0], [0], marker='o', color='w', 
-                                 markerfacecolor=MARKER_COLOR, markersize=LABEL_SIZE, 
-                                 label=f'Top {len(top_nodes_set)} Influencers')]
-    ax.legend(handles=legend_elements, loc='upper right')
+    # legend_elements = [plt.Line2D([0], [0], marker='o', color='w', 
+    #                              markerfacecolor=MARKER_COLOR, markersize=LABEL_SIZE, 
+    #                              label=f'Top {len(top_nodes_set)} Influencers')]
+    # ax.legend(handles=legend_elements, loc='upper right')
     
     # Save the figure
     output_filename = f"{centrality_measure.title()} Graph.png"
