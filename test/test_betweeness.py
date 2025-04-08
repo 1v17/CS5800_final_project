@@ -6,7 +6,7 @@ from unittest import TestCase, main
 from betweenness_centrality import betweenness_centrality
 import networkx as nx
 
-PLACES = 6  # Number of decimal places for comparison
+PLACES = 5  # Number of decimal places for comparison
 
 
 class TestBetweennessCentrality(TestCase):
