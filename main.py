@@ -15,6 +15,7 @@ def main():
         print("Creating Adjacency Matrix and List...")
         adjacency_matrix = create_adjacency_matrix(DATA_FILE)
         adjacency_list = create_adjacency_list(DATA_FILE)
+        # TODO: change the main function by using a loop to call other functions
 
         # Calculate betweenness centrality for a graph
         print("Calculating Betweenness Centrality...")
@@ -25,12 +26,13 @@ def main():
         plot_social_network(adjacency_list, b_centrality, "betweenness", top_bcentrality_nodes)
 
         # Calculate eigenvector centrality for a graph
-        print("\nCalculating Eigenvector Centrality...")
-        e_centrality = eigenvector_centrality(adjacency_matrix)
-        top_eigenvector_centrality_nodes = get_top_centrality(e_centrality, top_n=DEFLAULT_NODES)
-        print("Top 10 Eigenvector Centrality:", top_eigenvector_centrality_nodes)
-        compare_centrality_with_egos(top_eigenvector_centrality_nodes, EGO_VERTICES)
-        plot_social_network(adjacency_list, e_centrality, "eigenvector", top_eigenvector_centrality_nodes)
+        # TODO: need to update the eigenvector_centrality function to return a dictionary
+        # print("\nCalculating Eigenvector Centrality...")
+        # e_centrality = eigenvector_centrality(adjacency_matrix)
+        # top_eigenvector_centrality_nodes = get_top_centrality(e_centrality, top_n=DEFLAULT_NODES)
+        # print("Top 10 Eigenvector Centrality:", top_eigenvector_centrality_nodes)
+        # compare_centrality_with_egos(top_eigenvector_centrality_nodes, EGO_VERTICES)
+        # plot_social_network(adjacency_list, e_centrality, "eigenvector", top_eigenvector_centrality_nodes)
 
         # Calculate PageRank centrality for a graph
         print("\nCalculating PageRank Centrality...")

@@ -11,17 +11,16 @@ DEFLAULT_NODES = 10
 FIGURE_SIZE = 12
 LABEL_SIZE = 10
 EDGE_COLOR = "gray"
-NODE_COLOR = "skyblue"
-MARKER_COLOR = "deepskyblue"
 NODE_EDGE_COLOR = "black"
-LABEL_FONT_COLOR = "white"
+LABEL_FONT_COLOR = "darkorange"
+LEGEND_COLOR = "white"
 TRANSPARENCY = 0.8
 EDGE_WIDTH = 1
 DEFAULT_LAYOUT = "spring"
 NODE_SIZE = 300
 EDGE_WIDTH = 0.5
 HIGHLIGHT_SIZE_FACTOR = 1.2
-COLOR_MAP = "viridis"
+COLOR_MAP = cm.viridis
 
 
 def create_adjacency_list(edges_file_path: str) -> dict:
@@ -214,7 +213,7 @@ def plot_social_network(
         pos,
         node_size=node_sizes,
         node_color=[centrality[node] for node in nx_graph.nodes()],
-        cmap=plt.cm.viridis,
+        cmap=COLOR_MAP,
         alpha=TRANSPARENCY,
         ax=ax
     )
@@ -239,7 +238,7 @@ def plot_social_network(
             nodelist=list(top_nodes_set),
             node_size=top_node_sizes,
             node_color=[centrality[node] for node in top_nodes_set],
-            cmap=cm.viridis,
+            cmap=COLOR_MAP,
             edgecolors=NODE_EDGE_COLOR,
             linewidths=EDGE_WIDTH,
             alpha=TRANSPARENCY,
@@ -259,7 +258,7 @@ def plot_social_network(
     )
     
     # Add colorbar
-    sm = plt.cm.ScalarMappable(cmap=plt.cm.viridis, norm=norm)
+    sm = plt.cm.ScalarMappable(cmap=COLOR_MAP, norm=norm)
     sm.set_array([])
     cbar = fig.colorbar(sm, ax=ax)
     cbar.set_label(f'{centrality_measure.capitalize()} Centrality')
@@ -268,11 +267,11 @@ def plot_social_network(
     plt.title(f"Social Network Visualization - {centrality_measure.capitalize()} Centrality")
     plt.axis('off')
     
-    # Add legend for top influencers
-    # legend_elements = [plt.Line2D([0], [0], marker='o', color='w', 
-    #                              markerfacecolor=MARKER_COLOR, markersize=LABEL_SIZE, 
-    #                              label=f'Top {len(top_nodes_set)} Influencers')]
-    # ax.legend(handles=legend_elements, loc='upper right')
+    #Add legend for top influencers
+    legend_elements = [plt.Line2D([0], [0], marker='o', color=LEGEND_COLOR, 
+                                 markerfacecolor=LABEL_FONT_COLOR, markersize=LABEL_SIZE, 
+                                 label=f'Top {len(top_nodes_set)} Influencers')]
+    ax.legend(handles=legend_elements, loc='upper right')
     
     # Save the figure
     output_filename = f"{centrality_measure.title()} Graph.png"
