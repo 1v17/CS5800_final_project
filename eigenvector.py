@@ -20,16 +20,16 @@ def eigenvector_centrality(matrix, max_iter=DEFLAUT_ITERATIONS, tol=TOLERANCE):
     n = matrix.shape[0]
     centrality = np.ones(n)  # Initialize with all ones
     
-    for _ in range(max_iter):
+    iteration = 0
+    tolerance = np.inf
+    while iteration < max_iter and tolerance > tol:
         new_centrality = matrix @ centrality  # Matrix-vector multiplication
         new_centrality = new_centrality / np.linalg.norm(new_centrality)  # Normalize
         
-        # Check for convergence
-        if np.linalg.norm(new_centrality - centrality) < tol:
-            break
-            
+        # Update tolerance and centrality
+        tolerance = np.linalg.norm(new_centrality - centrality)           
         centrality = new_centrality
+        iteration += 1
     
-    # Normalize the centrality scores
     # Convert the numpy array to a dictionary
     return {i: float(score) for i, score in enumerate(centrality)}
