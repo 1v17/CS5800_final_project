@@ -33,7 +33,7 @@ def main():
         top_eigenvector_centrality_nodes = get_top_centrality(e_centrality, top_n=DEFLAULT_NODES)
         print("Top 10 Eigenvector Centrality:", top_eigenvector_centrality_nodes)
         compare_centrality_with_egos(top_eigenvector_centrality_nodes, EGO_VERTICES)
-        plot_social_network(adjacency_list, e_centrality, "eigenvector", top_eigenvector_centrality_nodes)
+        plot_social_network_with_centrality(adjacency_list, e_centrality, "eigenvector", top_eigenvector_centrality_nodes)
 
         # Calculate PageRank centrality for a graph
         print("\nCalculating PageRank Centrality...")
