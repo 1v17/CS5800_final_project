@@ -27,7 +27,6 @@ def main():
         plot_social_network_with_centrality(adjacency_list, b_centrality, "betweenness", top_bcentrality_nodes)
 
         # Calculate eigenvector centrality for a graph
-        # TODO: need to update the eigenvector_centrality function to return a dictionary
         print("\nCalculating Eigenvector Centrality...")
         e_centrality = eigenvector_centrality(adjacency_matrix)
         top_eigenvector_centrality_nodes = get_top_centrality(e_centrality, top_n=DEFLAULT_NODES)

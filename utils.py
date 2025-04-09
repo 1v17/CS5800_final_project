@@ -103,8 +103,7 @@ def get_top_centrality(centrality, top_n: int=DEFLAULT_NODES) -> list:
     Get the top N nodes based on their centrality scores.
 
     Args:
-
-        centrality (Union[dict, np.ndarray]): Dictionary or array of centrality scores.
+        centrality (dict): Dictionary of centrality scores.
         top_n (int): Number of top nodes to return.
 
     Returns:
@@ -118,18 +117,12 @@ def get_top_centrality(centrality, top_n: int=DEFLAULT_NODES) -> list:
         raise ValueError("top_n must be a positive integer")
     if not isinstance(top_n, int):
         raise TypeError("top_n must be an integer")
+    if not isinstance(centrality, dict):
+        raise TypeError("centrality must be a dictionary")
+
+    sorted_centrality = sorted(centrality.items(), key=lambda item: item[1], reverse=True)
+    return sorted_centrality[:top_n]
     
-    if isinstance(centrality, dict):
-        # Handle dictionary input
-        sorted_centrality = sorted(centrality.items(), key=lambda item: item[1], reverse=True)
-        return sorted_centrality[:top_n]
-    elif isinstance(centrality, np.ndarray):
-        # Convert array to (node_id, centrality_score) tuples
-        centrality_tuples = [(i, score) for i, score in enumerate(centrality)]
-        sorted_centrality = sorted(centrality_tuples, key=lambda item: item[1], reverse=True)
-        return sorted_centrality[:top_n]
-    else:
-        raise TypeError("centrality must be a dictionary or numpy array")
 
 def compare_centrality_with_egos(centrality_list: list[tuple], ego_vertices: set) -> None:
     """
