@@ -1,7 +1,7 @@
 from collections import deque
 
 
-def bfs_shortest_paths(graph, source):
+def bfs_shortest_paths(graph: dict, source):
     """
     Perform BFS to compute shortest paths in an unweighted graph.
 
@@ -59,7 +59,7 @@ def accumulate_dependencies(stack, pred, sigma, source):
             yield w, delta[w]
 
 
-def betweenness_centrality(graph, normalized=True, directed=False):
+def betweenness_centrality(graph: dict, normalized=True, directed=False):
     """
     Computes the betweenness centrality for all nodes in a graph using Brandes' algorithm.
 
