@@ -4,6 +4,7 @@ from utils import create_adjacency_list, create_adjacency_matrix, \
 from betweenness_centrality import betweenness_centrality
 from eigenvector import eigenvector_centrality
 from page_rank import page_rank_centrality
+from closeness import closeness_centrality
 
 DATA_FILE = "facebook_data/facebook_combined.txt"
 DEFLAULT_NODES = 10
@@ -18,11 +19,13 @@ def main():
         plot_social_network(adjacency_list, EGO_VERTICES)
 
         # change this to run different centrality functions
-        centrality_list = ["betweenness", "eigenvector", "pagerank"]
+        centrality_list = ["closeness", "betweenness", "eigenvector", "pagerank"]
 
         for centrality_measure in centrality_list:
             print(f"\nCalculating {centrality_measure.capitalize()} Centrality...")
             match centrality_measure:
+                case "closeness":
+                    centrality = closeness_centrality(adjacency_list)
                 case "betweenness":
                     centrality = betweenness_centrality(adjacency_list, normalized=True, directed=False)
                 case "eigenvector":
