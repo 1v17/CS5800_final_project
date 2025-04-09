@@ -13,35 +13,29 @@ EGO_VERTICES = {0, 107, 348, 414, 686, 698, 1684, 1912, 3437, 3980}
 def main():
     try:
         print("Creating Adjacency Matrix and List...")
-        # adjacency_matrix = create_adjacency_matrix(DATA_FILE)
+        adjacency_matrix = create_adjacency_matrix(DATA_FILE)
         adjacency_list = create_adjacency_list(DATA_FILE)
         plot_social_network(adjacency_list, EGO_VERTICES)
-        # TODO: change the main function by using a loop to call other functions
 
-        # Calculate betweenness centrality for a graph
-        print("Calculating Betweenness Centrality...")
-        b_centrality = betweenness_centrality(adjacency_list, normalized=True, directed=False)
-        top_bcentrality_nodes = get_top_centrality(b_centrality, top_n=DEFLAULT_NODES)
-        print("Top 10 Centrality:", top_bcentrality_nodes)
-        compare_centrality_with_egos(top_bcentrality_nodes, EGO_VERTICES)
-        plot_social_network_with_centrality(adjacency_list, b_centrality, "betweenness", top_bcentrality_nodes)
+        # change this to run different centrality functions
+        centrality_list = ["betweenness", "eigenvector", "pagerank"]
 
-        # Calculate eigenvector centrality for a graph
-        # TODO: need to update the eigenvector_centrality function to return a dictionary
-        # print("\nCalculating Eigenvector Centrality...")
-        # e_centrality = eigenvector_centrality(adjacency_matrix)
-        # top_eigenvector_centrality_nodes = get_top_centrality(e_centrality, top_n=DEFLAULT_NODES)
-        # print("Top 10 Eigenvector Centrality:", top_eigenvector_centrality_nodes)
-        # compare_centrality_with_egos(top_eigenvector_centrality_nodes, EGO_VERTICES)
-        # plot_social_network(adjacency_list, e_centrality, "eigenvector", top_eigenvector_centrality_nodes)
+        for centrality_measure in centrality_list:
+            print(f"\nCalculating {centrality_measure.capitalize()} Centrality...")
+            match centrality_measure:
+                case "betweenness":
+                    centrality = betweenness_centrality(adjacency_list, normalized=True, directed=False)
+                case "eigenvector":
+                    centrality = eigenvector_centrality(adjacency_matrix)
+                case "pagerank":
+                    centrality = page_rank_centrality(adjacency_list)
+                case _:
+                    raise ValueError(f"Unknown centrality measure: {centrality_measure}")
 
-        # Calculate PageRank centrality for a graph
-        print("\nCalculating PageRank Centrality...")
-        pagerank_centrality = page_rank_centrality(adjacency_list)
-        top_pagerank_centrality_nodes = get_top_centrality(pagerank_centrality, top_n=DEFLAULT_NODES)
-        print("Top 10 PageRank Centrality:", top_pagerank_centrality_nodes)
-        compare_centrality_with_egos(top_pagerank_centrality_nodes, EGO_VERTICES)
-        plot_social_network_with_centrality(adjacency_list, pagerank_centrality, "page rank", top_pagerank_centrality_nodes)
+            top_centrality_nodes = get_top_centrality(centrality, top_n=DEFLAULT_NODES)
+            print(f"Top 10 {centrality_measure.capitalize()} Centrality:", top_centrality_nodes)
+            compare_centrality_with_egos(top_centrality_nodes, EGO_VERTICES)
+            plot_social_network_with_centrality(adjacency_list, centrality, centrality_measure, top_centrality_nodes)
 
     except FileNotFoundError as e:
         print(f"Error: {e}. Please check the file path.")
@@ -49,6 +43,8 @@ def main():
         print(f"Error: {e}. Please check the file format.")
     except TypeError as e:
         print(f"Error: {e}. Please check the input types.")
+    except KeyError as e:
+        print(f"Error: {e}. Please check the graph structure.")
     except Exception as e:
         print(f"An unexpected error occurred: {e}.")
 
