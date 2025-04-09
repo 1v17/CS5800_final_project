@@ -4,6 +4,7 @@ Run with `python -m unittest -v test/test_utils.py` from root directory.
 """
 
 from unittest import TestCase, main
+import numpy as np
 from utils import create_adjacency_list, create_adjacency_matrix, get_top_centrality
 
 PATH = "test/test_files/"
@@ -64,12 +65,12 @@ class TestGraphConversionFunctions(TestCase):
             [0, 0, 1, 0, 1],
             [1, 0, 0, 1, 0]
         ]
-        self.assertEqual(adjacency_matrix, expected)
+        np.testing.assert_array_equal(adjacency_matrix, expected)
 
     def test_create_adjacency_matrix_empty_graph(self):
         adjacency_matrix = create_adjacency_matrix(PATH + "empty_graph.txt")
-        expected = []
-        self.assertEqual(adjacency_matrix, expected)
+        expected = np.zeros((0, 0), dtype=int)
+        np.testing.assert_array_equal(adjacency_matrix, expected)
 
     def test_create_adjacency_matrix_single_edge(self):
         adjacency_matrix = create_adjacency_matrix(PATH + "single_edge.txt")
@@ -77,7 +78,7 @@ class TestGraphConversionFunctions(TestCase):
             [0, 1],
             [1, 0]
         ]
-        self.assertEqual(adjacency_matrix, expected)
+        np.testing.assert_array_equal(adjacency_matrix, expected)
 
     def test_create_adjacency_matrix_disconnected_graph(self):
         adjacency_matrix = create_adjacency_matrix(
@@ -90,7 +91,7 @@ class TestGraphConversionFunctions(TestCase):
             [0, 0, 0, 0, 0, 1],
             [0, 0, 0, 0, 1, 0]
         ]
-        self.assertEqual(adjacency_matrix, expected)
+        np.testing.assert_array_equal(adjacency_matrix, expected)
 
     def test_create_adjacency_matrix_self_loop(self):
         adjacency_matrix = create_adjacency_matrix(PATH + "self_loop.txt")
@@ -99,7 +100,7 @@ class TestGraphConversionFunctions(TestCase):
             [0, 0, 1],
             [0, 1, 0]
         ]
-        self.assertEqual(adjacency_matrix, expected)
+        np.testing.assert_array_equal(adjacency_matrix, expected)
 
     def test_file_not_found(self):
         with self.assertRaises(FileNotFoundError):

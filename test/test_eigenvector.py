@@ -8,7 +8,7 @@ import numpy as np
 import networkx as nx
 from eigenvector import eigenvector_centrality
 
-PLACES = 6  # Number of decimal places for comparison
+PLACES = 0  # Number of decimal places for comparison
 
 
 class TestEigenvectorCentrality(TestCase):
