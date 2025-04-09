@@ -26,9 +26,12 @@ class TestEigenvectorCentrality(TestCase):
         
         # Verify using NetworkX
         nx_graph = nx.from_numpy_array(graph)
-        nx_result = np.array(list(nx.eigenvector_centrality(nx_graph).values()))
+        nx_result = nx.eigenvector_centrality(nx_graph)
         
-        np.testing.assert_almost_equal(result, nx_result, decimal=PLACES)
+        # Compare dictionaries directly
+        self.assertEqual(set(result.keys()), set(nx_result.keys()))
+        for node in result:
+            self.assertAlmostEqual(result[node], nx_result[node], places=PLACES)
 
     def test_triangle_graph(self):
         """
@@ -47,9 +50,13 @@ class TestEigenvectorCentrality(TestCase):
         
         # Verify using NetworkX
         nx_graph = nx.from_numpy_array(graph)
-        nx_result = np.array(list(nx.eigenvector_centrality(nx_graph).values()))
+        nx_result = nx.eigenvector_centrality(nx_graph)
         
-        np.testing.assert_almost_equal(result, nx_result, decimal=PLACES)
+        # Compare dictionaries directly
+        self.assertEqual(set(result.keys()), set(nx_result.keys()))
+        for node in result:
+            self.assertAlmostEqual(result[node], nx_result[node], places=PLACES)
+
 
     def test_tree_like_graph(self):
         """
@@ -67,9 +74,12 @@ class TestEigenvectorCentrality(TestCase):
         
         # Verify using NetworkX
         nx_graph = nx.from_numpy_array(graph)
-        nx_result = np.array(list(nx.eigenvector_centrality(nx_graph).values()))
+        nx_result = nx.eigenvector_centrality(nx_graph)
         
-        np.testing.assert_almost_equal(result, nx_result, decimal=PLACES)
+        # Compare dictionaries directly
+        self.assertEqual(set(result.keys()), set(nx_result.keys()))
+        for node in result:
+            self.assertAlmostEqual(result[node], nx_result[node], places=PLACES)
 
     def test_star_graph(self):
         """
@@ -78,19 +88,46 @@ class TestEigenvectorCentrality(TestCase):
         Center node should have the highest centrality.
         """
         graph = np.array([
-            [0, 1, 1, 1],  # Node 0 connects to everyone
-            [1, 0, 0, 0],  # Node 1 only connects to 0
-            [1, 0, 0, 0],  # Node 2 only connects to 0
-            [1, 0, 0, 0]   # Node 3 only connects to 0
+            [0, 1, 1, 1],  
+            [1, 0, 0, 0],  
+            [1, 0, 0, 0],  
+            [1, 0, 0, 0]   
         ])
         result = eigenvector_centrality(graph)
         
         # Verify using NetworkX
         nx_graph = nx.from_numpy_array(graph)
-        nx_result = np.array(list(nx.eigenvector_centrality(nx_graph).values()))
+        nx_result = nx.eigenvector_centrality(nx_graph)
         
-        np.testing.assert_almost_equal(result, nx_result, decimal=PLACES)
+        # Compare dictionaries directly
+        self.assertEqual(set(result.keys()), set(nx_result.keys()))
+        for node in result:
+            self.assertAlmostEqual(result[node], nx_result[node], places=PLACES)
 
+    def test_disconnected_graph(self):
+        """
+        Test Case 5: 
+        A: B, C
+        B: A
+        C: A, D
+        D: A, C
+        """
+        graph = np.array([
+            [0, 1, 1, 1],  
+            [1, 0, 0, 0],  
+            [1, 0, 0, 1],  
+            [1, 0, 1, 0]   
+        ])
+        result = eigenvector_centrality(graph)
+        
+        # Verify using NetworkX
+        nx_graph = nx.from_numpy_array(graph)
+        nx_result = nx.eigenvector_centrality(nx_graph)
+        
+        # Compare dictionaries directly
+        self.assertEqual(set(result.keys()), set(nx_result.keys()))
+        for node in result:
+            self.assertAlmostEqual(result[node], nx_result[node], places=PLACES)
 
 if __name__ == "__main__":
     main()
