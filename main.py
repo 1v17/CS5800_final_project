@@ -19,11 +19,13 @@ def main():
         plot_social_network(adjacency_list, EGO_VERTICES)
 
         # change this to run different centrality functions
-        centrality_list = ["betweenness", "eigenvector", "pagerank"]
+        centrality_list = ["closeness", "betweenness", "eigenvector", "pagerank"]
 
         for centrality_measure in centrality_list:
             print(f"\nCalculating {centrality_measure.capitalize()} Centrality...")
             match centrality_measure:
+                case "closeness":
+                    centrality = closeness_centrality(adjacency_list)
                 case "betweenness":
                     centrality = betweenness_centrality(adjacency_list, normalized=True, directed=False)
                 case "eigenvector":
