@@ -5,6 +5,7 @@ from betweenness_centrality import betweenness_centrality
 from eigenvector import eigenvector_centrality
 from page_rank import page_rank_centrality
 from closeness import closeness_centrality
+import networkx as nx
 
 DATA_FILE = "facebook_data/facebook_combined.txt"
 DEFLAULT_NODES = 10
@@ -14,12 +15,21 @@ EGO_VERTICES = {0, 107, 348, 414, 686, 698, 1684, 1912, 3437, 3980}
 def main():
     try:
         print("Creating Adjacency Matrix and List...")
-        adjacency_matrix = create_adjacency_matrix(DATA_FILE)
+        # adjacency_matrix = create_adjacency_matrix(DATA_FILE)
         adjacency_list = create_adjacency_list(DATA_FILE)
-        plot_social_network(adjacency_list, EGO_VERTICES)
+        # plot_social_network(adjacency_list, EGO_VERTICES)
+
+        # caluculate average clustering coefficient of the dataset
+        nx_graph = nx.Graph(adjacency_list)
+        clustering_coefficient = nx.average_clustering(nx_graph)
+        print(f"Average Clustering Coefficient: {clustering_coefficient:.4f}")
+        random_graph = nx.gnm_random_graph(4039, 88234)
+        random_clustering_coefficient = nx.average_clustering(random_graph)
+        print(f"Average Clustering Coefficient of Random Graph: {random_clustering_coefficient:.4f}")
 
         # change this to run different centrality functions
-        centrality_list = ["closeness", "betweenness", "eigenvector", "pagerank"]
+        # centrality_list = ["closeness", "betweenness", "eigenvector", "pagerank"]
+        centrality_list = []
 
         for centrality_measure in centrality_list:
             print(f"\nCalculating {centrality_measure.capitalize()} Centrality...")
